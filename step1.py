@@ -2,8 +2,8 @@ import csv
 import re
 
 
-def preprocess(trainFilename, outFilename):
-    with open(trainFilename, 'r') as inF, open(outFilename, 'w') as outF:
+def preprocess(inFilename, outFilename):
+    with open(inFilename, 'r') as inF, open(outFilename, 'w') as outF:
         reader = csv.reader(inF, delimiter=',', quotechar='"')
         next(inF)
         for row in reader:
