@@ -7,9 +7,9 @@ def main():
     trainppFilename = 'train_pp.csv'
     dictFilename = 'dictionary.txt'
     print('STEP 1')
-    #step1.preprocess(trainFilename, trainppFilename)
+    step1.preprocess(trainFilename, trainppFilename)
     print('STEP 2')
-    #step2.generate_dict(trainppFilename, dictFilename, limit=limitDict) 
+    step2.generate_dict(trainppFilename, dictFilename, limit=limitDict) 
     print('STEP 3')
     step3.use_model(trainppFilename, dictFilename) 
 
