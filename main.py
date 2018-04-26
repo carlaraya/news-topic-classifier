@@ -1,12 +1,18 @@
-import step1, step2
+import step1, step2, step3
 
 
 def main():
+    limitDict = 50000
     trainFilename = 'train_data.csv'
-    ppFilename = 'train_pp.csv'
+    trainppFilename = 'train_pp.csv'
+    testppFilename = 'test_pp.csv'
     dictFilename = 'dictionary.txt'
-    step1.preprocess(trainFilename, ppFilename)
-    step2.generate_dict(ppFilename, dictFilename) 
+    print('STEP 1')
+    step1.preprocess(trainFilename, trainppFilename)
+    print('STEP 2')
+    step2.generate_dict(trainppFilename, dictFilename, limit=limitDict) 
+    print('STEP 3')
+    step3.use_model(trainppFilename, testppFilename, dictFilename) 
 
 if __name__ == '__main__':
     main()
