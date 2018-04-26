@@ -1,9 +1,7 @@
 import csv
 import re
-from nltk.stem.porter import PorterStemmer
 
-def preprocess(inFilename, outFilename, stem=True):
-    stemmer = PorterStemmer()
+def preprocess(inFilename, outFilename):
     with open(inFilename, 'r') as inF, open(outFilename, 'w') as outF:
         reader = csv.reader(inF, delimiter=',', quotechar='"')
         next(inF)
@@ -16,8 +14,7 @@ def preprocess(inFilename, outFilename, stem=True):
                 topic = rowTuple[4]
             ppStr = rowTuple[1]
             ppStr = re.sub(r'[^a-z-$]', ' ', ppStr.lower())
-            tokens = ppStr.split()
-            print(' '.join(tokens) + ',' + topic, file=outF)
+            print(ppStr + ',' + topic, file=outF)
 
 def clean_and_chop(row):
     #print(row)

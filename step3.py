@@ -3,36 +3,40 @@ from scipy.sparse import lil_matrix
 from sklearn.naive_bayes import MultinomialNB
 import mmap
 
-def use_model(trainppFilename, testppFilename, dictFilename):
+def use_model(trainppFilename, dictFilename):
     words, lenDict = get_dict(dictFilename)
     wordsIndex = {words[i]: i for i in range(lenDict)}
     clf = MultinomialNB(alpha=0.01)
+    numRows = count_lines(trainppFilename)
+    numTrain = 120000
 
-    XTrain, yTrain = make_sparse(wordsIndex, trainppFilename)
+    inF = open(trainppFilename, 'r')
+    XTrain, yTrain = make_sparse(wordsIndex, inF, numRows=numTrain)
     print('Fitting')
     clf.fit(XTrain, yTrain)
     print('Predicting on training set')
     print('Accuracy:', clf.score(XTrain, yTrain))
-    #XTest, yTest = make_sparse(wordsIndex, testppFilename)
-    #print('Predicting on test set')
-    #print('Accuracy:', clf.score(XTest, yTest))
+    XTest, yTest = make_sparse(wordsIndex, inF, numRows=numRows-numTrain)
+    print('Predicting on test set')
+    print('Accuracy:', clf.score(XTest, yTest))
 
 
-def make_sparse(wordsIndex, filename):
-    numRows = count_lines(filename)
-    XTrain = lil_matrix((numRows, len(wordsIndex)), dtype=np.uint8)
-    yTrain = []
-    with open(filename, 'r') as inF:
-        for row, i in zip(inF, range(numRows)):
-            if i % 1000 == 0: print(i)
-            row = row.split(',')
-            yTrain.append(row[1].strip())
-            row = row[0].split()
-            for word in row:
-                j = wordsIndex.get(word)
-                if j:
-                    XTrain[i, j] += 1
-    return (XTrain, yTrain)
+def make_sparse(wordsIndex, inF, numRows=None):
+    lenDict = len(wordsIndex)
+    X = lil_matrix((numRows, lenDict), dtype=np.uint8)
+    y = []
+    for i, row in zip(range(numRows), inF):
+        if i % 1000 == 0: print(i)
+        row = row.split(',')
+        y.append(row[1].strip())
+        row = row[0].split()
+        for word in row:
+            j = wordsIndex.get(word)
+            if j:
+                X[i, j] += 1
+    print(i)
+    print('rows:', len(y))
+    return (X, y)
 
 def get_dict(inFilename):
     rows = open(inFilename, 'r').readlines()
