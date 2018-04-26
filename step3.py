@@ -6,9 +6,10 @@ import mmap
 def use_model(trainppFilename, dictFilename):
     words, lenDict = get_dict(dictFilename)
     wordsIndex = {words[i]: i for i in range(lenDict)}
-    clf = MultinomialNB(alpha=0.01)
+    clf = MultinomialNB(alpha=0.1)
     numRows = count_lines(trainppFilename)
     numTrain = 120000
+    numTest = numRows-numTrain
 
     inF = open(trainppFilename, 'r')
     XTrain, yTrain = make_sparse(wordsIndex, inF, numRows=numTrain)
@@ -16,7 +17,7 @@ def use_model(trainppFilename, dictFilename):
     clf.fit(XTrain, yTrain)
     print('Predicting on training set')
     print('Accuracy:', clf.score(XTrain, yTrain))
-    XTest, yTest = make_sparse(wordsIndex, inF, numRows=numRows-numTrain)
+    XTest, yTest = make_sparse(wordsIndex, inF, numRows=numTest)
     print('Predicting on test set')
     print('Accuracy:', clf.score(XTest, yTest))
 
