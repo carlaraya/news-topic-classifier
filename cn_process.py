@@ -1,8 +1,20 @@
 import csv
 import re
+from collections import defaultdict
+import enchant
+import numpy as np
+from scipy.sparse import coo_matrix
+import mmap
+import itertools
 
-def preprocess(inFilename, outFilename):
-    with open(inFilename, 'r') as inF, open(outFilename, 'w') as outF:
+limitDict = 50000
+percentTrain = 0.6
+dataFilename = 'cn_data.csv'
+ppFilename = 'cn_pp.csv'
+dictFilename = 'cn_dictionary.txt'
+
+def preprocess():
+    with open(dataFilename, 'r') as inF, open(ppFilename, 'w') as outF:
         reader = csv.reader(inF, delimiter=',', quotechar='"')
         next(inF)
         for row in inF:
@@ -31,28 +43,22 @@ def clean_and_chop(row):
 
 
 
-from collections import defaultdict
-
-def generate_dict(inFilename, outFilename, limit=50000):
+def generate_dict():
+    d = enchant.Dict('EN-US')
     dictionary = defaultdict(int)
-    with open(inFilename, 'r') as inF, open(outFilename, 'w') as outF:
+    with open(ppFilename, 'r') as inF, open(dictFilename, 'w') as outF:
         for row in inF:
             row = row.split(',')[0]
             for word in row.split():
                 dictionary[word] += 1
 
         sortedTuples = sorted(dictionary.items(), key=lambda i: i[1], reverse=True)
-        dictText = '\n'.join(map(lambda i: i[0], sortedTuples[:limit]))
+        dictText = '\n'.join(map(lambda i: i[0], sortedTuples[:limitDict]))
         print(dictText, file=outF)
 
 
 
-import numpy as np
-from scipy.sparse import coo_matrix
-import mmap
-import itertools
-
-def make_all_matrices(ppFilename, dictFilename, percentTrain=0.6):
+def make_all_matrices():
     rows = open(dictFilename, 'r').readlines()
     words = [x.strip() for x in rows]
     lenDict = len(rows)
@@ -65,7 +71,6 @@ def make_all_matrices(ppFilename, dictFilename, percentTrain=0.6):
             numRows += 1
     numTrain = int(numRows * percentTrain)
     numTest = numRows-numTrain
-
     inF = open(ppFilename, 'r')
     XTrain, YTrain = make_sparse(wordsIndex, inF, numRows=numTrain)
     XTest, YTest = make_sparse(wordsIndex, inF, numRows=numTest)
@@ -73,28 +78,24 @@ def make_all_matrices(ppFilename, dictFilename, percentTrain=0.6):
 
 def make_sparse(wordsIndex, inF, numRows=None):
     lenDict = len(wordsIndex)
-    row = []
-    col = []
+    rowIndex = []
+    colIndex = []
     data = []
-    y = []
+    Y = []
     if numRows:
         maxRowRange = range(numRows)
     else:
         maxRowRange = itertools.count(start=0, step=1)
     for i, currRow in zip(maxRowRange, inF):
-        if i % 10000 == 0: print(i)
         currRow = currRow.split(',')
-        y.append(currRow[1].strip())
+        Y.append(currRow[1].strip())
         headline = currRow[0].split()
         for word in headline:
             j = wordsIndex.get(word)
             if j:
-                row.append(i)
-                col.append(j)
+                rowIndex.append(i)
+                colIndex.append(j)
                 data.append(1)
-    numRows = len(y)
-    #print(row, col, data)
-    X = coo_matrix((data, (row, col)), shape=(numRows, lenDict))
-    print(i)
-    print('rows:', numRows)
-    return (X, y)
+    numRows = len(Y)
+    X = coo_matrix((data, (rowIndex, colIndex)), shape=(numRows, lenDict))
+    return (X, Y)

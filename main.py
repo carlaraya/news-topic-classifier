@@ -1,19 +1,27 @@
-import cn_process, step3
+import cn_process, atn_process, machinelearn
 
 def main():
-    limitDict = 50000
-    percentTrain = 0.6
-    dataFilename = 'cn_data.csv'
-    ppFilename = 'cn_pp.csv'
-    dictFilename = 'dictionary.txt'
-    print('STEP 1')
-    cn_process.preprocess(dataFilename, ppFilename)
-    print('STEP 2')
-    cn_process.generate_dict(ppFilename, dictFilename, limit=limitDict) 
-    print('STEP 3')
-    XTrain, YTrain, XTest, YTest = cn_process.make_all_matrices(ppFilename, dictFilename, percentTrain=percentTrain)
-    print('STEP 4')
-    step3.train(XTrain, YTrain, XTest, YTest)
+
+    print("========CN DATASET========")
+    print('Preprocessing...')
+    cn_process.preprocess()
+    print('Creating dictionary...')
+    cn_process.generate_dict() 
+    print('Generating matrix...')
+    XTrain, YTrain, XTest, YTest = cn_process.make_all_matrices()
+
+    machinelearn.use_models(XTrain, YTrain, XTest, YTest)
+
+    print("========ATN DATASET========")
+    print("Preprocessing...")
+    #atn_process.preprocessing()
+    print("Creating dictionary...")
+    #atn_process.create_dictionary()
+    print("Generating matrix...")
+    (XTrain, YTrain) = atn_process.create_sparse_matrix(0, 0.6)
+    (XTest, YTest) = atn_process.create_sparse_matrix(0.6, 1)
+
+    machinelearn.use_models(XTrain, YTrain, XTest, YTest)
 
 if __name__ == '__main__':
     main()
