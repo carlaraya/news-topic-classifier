@@ -9,16 +9,17 @@ from time import time
 # List of models (list of tuples containing model, description)
 models = [
     (BernoulliNB(), 'Bernoulli NB with default'),
+    (MultinomialNB(alpha=1), 'Multinomial NB with alpha=1'),
     (MultinomialNB(alpha=0.3), 'Multinomial NB with alpha=0.3'),
     (MultinomialNB(alpha=0.1), 'Multinomial NB with alpha=0.1'),
     (MultinomialNB(alpha=0.03), 'Multinomial NB with alpha=0.03'),
     (MultinomialNB(alpha=0.01), 'Multinomial NB with alpha=0.01'),
-    (SGDClassifier(max_iter=1000, tol=1e-3), 'Linear SVM'),
+    (SGDClassifier(max_iter=1000, tol=1e-3, random_state=0), 'Linear SVM with stochastic gradient descent'),
 ]
 
 def use_models(XTrain, YTrain, XTest, YTest):
     # Fit, predict, and show accuracies of each model on training and test sets
-    print("CLASSIFIER ACCURACIES")
+    print("MODELS")
     for modelTuple in models:
         fit_predict_show(modelTuple, XTrain, YTrain, XTest, YTest)
 

@@ -14,9 +14,9 @@ def main():
 
     print("========ATN DATASET========")
     print("Preprocessing...")
-    #atn_process.preprocessing()
+    atn_process.preprocessing()
     print("Creating dictionary...")
-    #atn_process.create_dictionary()
+    atn_process.create_dictionary()
     print("Generating matrix...")
     (XTrain, YTrain) = atn_process.create_sparse_matrix(0, 0.6)
     (XTest, YTest) = atn_process.create_sparse_matrix(0.6, 1)
