@@ -48,8 +48,9 @@ def generate_dict(inFilename, outFilename, limit=50000):
 
 
 import numpy as np
-from scipy.sparse import lil_matrix
+from scipy.sparse import coo_matrix
 import mmap
+import itertools
 
 def make_all_matrices(ppFilename, dictFilename, percentTrain=0.6):
     rows = open(dictFilename, 'r').readlines()
@@ -72,17 +73,28 @@ def make_all_matrices(ppFilename, dictFilename, percentTrain=0.6):
 
 def make_sparse(wordsIndex, inF, numRows=None):
     lenDict = len(wordsIndex)
-    X = lil_matrix((numRows, lenDict), dtype=np.uint8)
+    row = []
+    col = []
+    data = []
     y = []
-    for i, row in zip(range(numRows), inF):
+    if numRows:
+        maxRowRange = range(numRows)
+    else:
+        maxRowRange = itertools.count(start=0, step=1)
+    for i, currRow in zip(maxRowRange, inF):
         if i % 10000 == 0: print(i)
-        row = row.split(',')
-        y.append(row[1].strip())
-        row = row[0].split()
-        for word in row:
+        currRow = currRow.split(',')
+        y.append(currRow[1].strip())
+        headline = currRow[0].split()
+        for word in headline:
             j = wordsIndex.get(word)
             if j:
-                X[i, j] += 1
+                row.append(i)
+                col.append(j)
+                data.append(1)
+    numRows = len(y)
+    #print(row, col, data)
+    X = coo_matrix((data, (row, col)), shape=(numRows, lenDict))
     print(i)
-    print('rows:', len(y))
+    print('rows:', numRows)
     return (X, y)
