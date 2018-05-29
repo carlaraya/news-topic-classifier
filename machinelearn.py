@@ -8,13 +8,17 @@ from time import time
 
 # List of models (list of tuples containing model, description)
 models = [
-    (BernoulliNB(), 'Bernoulli NB with default'),
+    (BernoulliNB(alpha=1), 'Bernoulli NB with alpha=1'),
+    (BernoulliNB(alpha=0.3), 'Bernoulli NB with alpha=0.3'),
+    (BernoulliNB(alpha=0.1), 'Bernoulli NB with alpha=0.1'),
+    (BernoulliNB(alpha=0.03), 'Bernoulli NB with alpha=0.03'),
+    (BernoulliNB(alpha=0.01), 'Bernoulli NB with alpha=0.01'),
     (MultinomialNB(alpha=1), 'Multinomial NB with alpha=1'),
     (MultinomialNB(alpha=0.3), 'Multinomial NB with alpha=0.3'),
     (MultinomialNB(alpha=0.1), 'Multinomial NB with alpha=0.1'),
     (MultinomialNB(alpha=0.03), 'Multinomial NB with alpha=0.03'),
     (MultinomialNB(alpha=0.01), 'Multinomial NB with alpha=0.01'),
-    (SGDClassifier(max_iter=1000, tol=1e-3, random_state=0), 'Linear SVM with stochastic gradient descent'),
+    (SGDClassifier(loss='hinge', max_iter=1000, tol=1e-3, random_state=0), 'Linear SVM with stochastic gradient descent'),
 ]
 
 def use_models(XTrain, YTrain, XTest, YTest):
