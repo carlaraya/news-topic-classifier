@@ -1,17 +1,19 @@
-import step1, step2, step3
-
+import cn_process, step3
 
 def main():
     limitDict = 50000
-    trainFilename = 'train_data.csv'
-    trainppFilename = 'train_pp.csv'
+    percentTrain = 0.6
+    dataFilename = 'cn_data.csv'
+    ppFilename = 'cn_pp.csv'
     dictFilename = 'dictionary.txt'
     print('STEP 1')
-    step1.preprocess(trainFilename, trainppFilename)
+    cn_process.preprocess(dataFilename, ppFilename)
     print('STEP 2')
-    step2.generate_dict(trainppFilename, dictFilename, limit=limitDict) 
+    cn_process.generate_dict(ppFilename, dictFilename, limit=limitDict) 
     print('STEP 3')
-    step3.use_model(trainppFilename, dictFilename) 
+    XTrain, YTrain, XTest, YTest = cn_process.make_all_matrices(ppFilename, dictFilename, percentTrain=percentTrain)
+    print('STEP 4')
+    step3.train(XTrain, YTrain, XTest, YTest)
 
 if __name__ == '__main__':
     main()
