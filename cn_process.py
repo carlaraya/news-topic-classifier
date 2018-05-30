@@ -1,7 +1,6 @@
 import csv
 import re
 from collections import defaultdict
-import enchant
 import numpy as np
 from scipy.sparse import coo_matrix
 import mmap
@@ -44,7 +43,6 @@ def clean_and_chop(row):
 
 
 def generate_dict():
-    d = enchant.Dict('EN-US')
     dictionary = defaultdict(int)
     with open(ppFilename, 'r') as inF, open(dictFilename, 'w') as outF:
         for row in inF:
@@ -64,11 +62,14 @@ def make_all_matrices():
     lenDict = len(rows)
     wordsIndex = {words[i]: i for i in range(lenDict)}
 
+    # Count number of rows in preprocessed file
     numRows = 0
     with open(ppFilename, 'r') as obj:
+        # Use mmap for faster line reading of file
         buf = mmap.mmap(obj.fileno(), 0, prot=mmap.PROT_READ)
         while buf.readline():
             numRows += 1
+
     numTrain = int(numRows * percentTrain)
     numTest = numRows-numTrain
     inF = open(ppFilename, 'r')
