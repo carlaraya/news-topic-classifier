@@ -6,13 +6,21 @@ from scipy.sparse import coo_matrix
 import mmap
 import itertools
 
+#Setting variables
 limitDict = 50000
+#Percent of Training dataset
 percentTrain = 0.6
+#CN Dataset
 dataFilename = 'cn_data.csv'
+#Filename for preprocessed dataset
 ppFilename = 'cn_pp.csv'
+#Filename for dictionary
 dictFilename = 'cn_dictionary.txt'
 
+#Accepts no parameter
+#Gets all the headline in the csv file, cleans it, and places it to another csv
 def preprocess():
+    #Each headline in the original csv is the iterated, cleaned, and placed to the outF file.
     with open(dataFilename, 'r') as inF, open(ppFilename, 'w') as outF:
         reader = csv.reader(inF, delimiter=',', quotechar='"')
         next(inF)
@@ -27,6 +35,8 @@ def preprocess():
             ppStr = re.sub(r'[^a-z-$]', ' ', ppStr.lower())
             print(ppStr + ',' + topic, file=outF)
 
+#Accepts parameterr row
+#row is the unprocessed headline from the csv input
 def clean_and_chop(row):
     #print(row)
     if '\t' in row:
@@ -41,7 +51,8 @@ def clean_and_chop(row):
     return next(csv.reader([row], delimiter=',', quotechar='"'))
 
 
-
+#Accepts no parameter
+#Gets all the words in the deadline and places it in the dictionary text file
 def generate_dict():
     dictionary = defaultdict(int)
     with open(ppFilename, 'r') as inF, open(dictFilename, 'w') as outF:
