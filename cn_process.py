@@ -65,8 +65,13 @@ def generate_dict():
         dictText = '\n'.join(map(lambda i: i[0], sortedTuples[:limitDict]))
         print(dictText, file=outF)
 
-
-
+#Accepts no parameters
+#Creates the matrices needed for the tranining and predicting process
+#Returns a 4-tuple containing the following
+#XTrain (CN Training Sparse Feature Vectors)
+#YTrain (CN Training Labels)
+#XTest (CN Test Sparse Feature Vectors)
+#YTrain (CN Test Labels)
 def make_all_matrices():
     rows = open(dictFilename, 'r').readlines()
     words = [x.strip() for x in rows]
@@ -80,7 +85,6 @@ def make_all_matrices():
         buf = mmap.mmap(obj.fileno(), 0, prot=mmap.PROT_READ)
         while buf.readline():
             numRows += 1
-
     numTrain = int(numRows * percentTrain)
     numTest = numRows-numTrain
     inF = open(ppFilename, 'r')
@@ -88,6 +92,11 @@ def make_all_matrices():
     XTest, YTest = make_sparse(wordsIndex, inF, numRows=numTest)
     return (XTrain, YTrain, XTest, YTest)
 
+#Accepts the following parameters
+#wordsIndex (Simply contains the words in the dictionary)
+#inF (preprocessed file)
+#numRows (number of headlines)
+#Returns the Sparse Feature Vectors and Labels
 def make_sparse(wordsIndex, inF, numRows=None):
     lenDict = len(wordsIndex)
     rowIndex = []
